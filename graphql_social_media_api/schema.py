@@ -7,6 +7,10 @@ class User(DjangoObjectType):
     class Meta:
         model = models.User
 
+class Post(DjangoObjectType):
+    class Meta:
+        model = models.Post
+
 class UserInput(graphene.InputObjectType):
     name = graphene.String()
 
