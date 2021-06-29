@@ -14,6 +14,11 @@ class Post(DjangoObjectType):
 class UserInput(graphene.InputObjectType):
     name = graphene.String()
 
+
+class PostInput(graphene.InputObjectType):
+    content = graphene.String()
+    user_id = graphene.Int()
+
 class CreateUser(graphene.Mutation): #Создали мутатора mutator
     class Arguments:
         input = UserInput(required=True)
@@ -32,6 +37,29 @@ class CreateUser(graphene.Mutation): #Создали мутатора mutator
         #Добавляем пустых followers
 #        isinstance.followers.set([])
         return CreateUser(ok=True, user=isinstance)
+
+#Mutation for creating posts
+class CreatePost(graphene.Mutation):
+    class Arguments:
+        input = PostInput(required=True)
+
+    ok = graphene.Boolean()
+    post = graphene.Field(Post)
+
+    @staticmethod
+    def mutate(root, info, input):
+        user = models.User.objects.get(pk=input.user_id)
+        if not models.User.objects.filter(pk=user.pk).exists():
+            return CreatePost(ok=False, post=None)
+
+        isinstance = models.Post(content=input.content, created_by=user)
+        try:
+            isinstance.save()
+        except Exception:
+            return CreatePost(ok=False, post=None)
+
+        return CreatePost(ok=True, post=isinstance)
+
 
 class Query(graphene.ObjectType):
     user = graphene.Field(User, id=graphene.Int())
@@ -52,6 +80,6 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
-
+    create_post = CreatePost.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

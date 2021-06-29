@@ -30,6 +30,14 @@
    "content": "I love to party!!!",
    "created_by": 2
  }
+},
+{
+ "model": "graphql_api.post",
+ "pk": 3,
+ "fields": {
+   "content": "Here is Testing 3-d post of John Doe",
+   "created_by": 1
+ }
 }
 ]
 
