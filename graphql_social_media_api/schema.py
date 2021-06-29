@@ -35,13 +35,20 @@ class CreateUser(graphene.Mutation): #Создали мутатора mutator
 
 class Query(graphene.ObjectType):
     user = graphene.Field(User, id=graphene.Int())
+    users = graphene.List(User)
 
-    def resolve_user(self, info,**kwargs):
+    # Необходимо определить резолвера для одного пользователя
+    def resolve_user(self, info, **kwargs):
         id = kwargs.get('id')
 
         if id is not None:
             return models.User.objects.get(pk=id)
         return None
+
+    # Необходимо определить резолвера для пользователей
+    def resolve_users(self, info, **kwargs):
+        #Извлекаем всех пользователей
+        return models.User.objects.all()
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
